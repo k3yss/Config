@@ -46,6 +46,19 @@
     LC_TIME = "en_IN";
   };
 
+  # Enable auto-cpufreq
+  services.auto-cpufreq.enable = true;
+  services.auto-cpufreq.settings = {
+	  battery = {
+		  governor = "powersave";
+		  turbo = "never";
+	  };
+	  charger = {
+		  governor = "performance";
+		  turbo = "auto";
+	  };
+  };
+
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
