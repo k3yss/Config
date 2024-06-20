@@ -46,11 +46,11 @@
       	      colorscheme PaperColor
       	      let g:airline_powerline_fonts = 1
               	'';
-	extraLuaConfig = ''
-		require('config/telescope')
-		require('config/lsp-zero')
-		require('config/tree-sitter')
-	'';
+    extraLuaConfig = ''
+      		require('config/telescope')
+      		require('config/lsp-zero')
+      		require('config/tree-sitter')
+      	'';
     plugins = with pkgs.vimPlugins;[
       auto-pairs
       vim-airline
