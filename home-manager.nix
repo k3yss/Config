@@ -35,6 +35,7 @@
       nixd
       obsidian
       nix-output-monitor
+	  dbeaver-bin
     ];
 
     programs.tmux = {

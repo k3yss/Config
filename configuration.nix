@@ -109,9 +109,16 @@
       kdePackages.yakuake
       kdePackages.spectacle
       clamav
+	  gparted
       #  thunderbird
     ];
     shell = pkgs.zsh;
+  };
+
+  # Enable clamav antivirus
+  services.clamav = {
+	  daemon.enable = true;
+	  updater.enable = true;
   };
 
   # Enable automatic login for the user.
