@@ -9,7 +9,6 @@
     [
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      #<home-manager/nixos>
       ./nbfc.nix
       ./home-manager.nix
     ];
@@ -47,17 +46,17 @@
   };
 
   # Enable auto-cpufreq
-  services.auto-cpufreq.enable = true;
-  services.auto-cpufreq.settings = {
-	  battery = {
-		  governor = "powersave";
-		  turbo = "never";
-	  };
-	  charger = {
-		  governor = "performance";
-		  turbo = "auto";
-	  };
-  };
+  #   services.auto-cpufreq.enable = true;
+  #   services.auto-cpufreq.settings = {
+  # 	  battery = {
+  # 		  governor = "powersave";
+  # 		  turbo = "never";
+  # 	  };
+  # 	  charger = {
+  # 		  governor = "performance";
+  # 		  turbo = "auto";
+  # 	  };
+  #   };
 
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
@@ -109,7 +108,7 @@
       kdePackages.yakuake
       kdePackages.spectacle
       clamav
-	  gparted
+      gparted
       #  thunderbird
     ];
     shell = pkgs.zsh;
@@ -117,8 +116,8 @@
 
   # Enable clamav antivirus
   services.clamav = {
-	  daemon.enable = true;
-	  updater.enable = true;
+    daemon.enable = true;
+    updater.enable = true;
   };
 
   # Enable automatic login for the user.

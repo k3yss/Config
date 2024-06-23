@@ -1,7 +1,7 @@
 { inputs, pkgs, ... }:
 let
   myUser = "k3ys"; #adjust this to your username
-  command = "bin/nbfc_service --config-file '/home/${myUser}/.config/nbfc.json'";
+  command = "bin/nbfc_service --config-file '/home/${myUser}/nixos-config/nbfc.json'";
 in
 {
   environment.systemPackages = with pkgs; [

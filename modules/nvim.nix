@@ -47,10 +47,10 @@
       	      let g:airline_powerline_fonts = 1
               	'';
     extraLuaConfig = ''
-      		require('config/telescope')
-      		require('config/lsp-zero')
-      		require('config/tree-sitter')
-      	'';
+      			dofile('/home/k3ys/nixos-config/modules/lua/config/telescope.lua')
+      			dofile('/home/k3ys/nixos-config/modules/lua/config/lsp-zero.lua')
+      			dofile('/home/k3ys/nixos-config/modules/lua/config/tree-sitter.lua')
+            	'';
     plugins = with pkgs.vimPlugins;[
       auto-pairs
       vim-airline
