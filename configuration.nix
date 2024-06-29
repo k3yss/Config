@@ -45,6 +45,8 @@
     LC_TIME = "en_IN";
   };
 
+  # services.power-profiles-daemon.enable = false;
+
   # Enable auto-cpufreq
   #   services.auto-cpufreq.enable = true;
   #   services.auto-cpufreq.settings = {
@@ -75,6 +77,10 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+  services.printing.drivers = with pkgs; [
+    dcp375cwlpr
+    dcp375cw-cupswrapper
+  ];
 
   # Enable sound with pipewire.
   hardware.pulseaudio.enable = false;
@@ -129,6 +135,7 @@
   programs.firefox.enable = true;
   programs.zsh.enable = true;
   programs.adb.enable = true;
+  programs.gamemode.enable = true;
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
@@ -147,6 +154,7 @@
     lshw
     wl-clipboard
     nss_latest
+	mangohud
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -193,4 +201,5 @@
       setSocketVariable = true;
     };
   };
+  hardware.nvidia.open = true;
 }

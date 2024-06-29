@@ -68,6 +68,7 @@
       nvim-cmp
       luasnip
       cmp-nvim-lsp
+
       mason-nvim
       mason-lspconfig-nvim
       lspkind-nvim
