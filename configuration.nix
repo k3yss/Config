@@ -77,9 +77,28 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
-  services.printing.drivers = with pkgs; [
-    dcp375cwlpr
-    dcp375cw-cupswrapper
+
+  hardware.printers = {
+    ensurePrinters = [
+      {
+        name = "Dell_1250c";
+        location = "Home";
+        deviceUri = "usb://Brother/DCP-T420W?serial=E80718L2H578798";
+        model = "gutenprint.5.3://brother-dcp-1200/expert";
+        ppdOptions = {
+          PageSize = "A4";
+        };
+      }
+    ];
+  };
+
+  services.printing.drivers = [
+    (pkgs.callPackage ./dcpt420w.nix { })
+    pkgs.gutenprint
+    pkgs.gutenprintBin
+    pkgs.brlaser
+    pkgs.brgenml1lpr
+    pkgs.brgenml1cupswrapper
   ];
 
   # Enable sound with pipewire.
@@ -113,18 +132,19 @@
       kdePackages.konsole
       kdePackages.yakuake
       kdePackages.spectacle
-      clamav
+      # clamav
       gparted
+      nix-output-monitor
       #  thunderbird
     ];
     shell = pkgs.zsh;
   };
 
   # Enable clamav antivirus
-  services.clamav = {
-    daemon.enable = true;
-    updater.enable = true;
-  };
+  #services.clamav = {
+  #  daemon.enable = true;
+  #  updater.enable = true;
+  #};
 
   # Enable automatic login for the user.
   services.displayManager.autoLogin.enable = false;
@@ -154,7 +174,7 @@
     lshw
     wl-clipboard
     nss_latest
-	mangohud
+    mangohud
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -201,5 +221,8 @@
       setSocketVariable = true;
     };
   };
-  hardware.nvidia.open = true;
+  hardware.nvidia = {
+	  open = true;
+	  package = config.boot.kernelPackages.nvidiaPackages.stable;
+  }; 
 }

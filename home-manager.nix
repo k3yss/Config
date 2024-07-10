@@ -7,6 +7,7 @@
     fonts.fontconfig.enable = true;
     home.packages = with pkgs;[
       (nerdfonts.override { fonts = [ "FiraCode" ]; })
+      tree
       slack
       spotify
       discord
@@ -24,7 +25,6 @@
       google-cloud-sdk
       htop
       meld
-      neofetch
       discord-screenaudio
       direnv
       kitty
@@ -36,6 +36,8 @@
       obsidian
       nix-output-monitor
       dbeaver-bin
+      stremio
+      vesktop
     ];
 
     programs.tmux = {

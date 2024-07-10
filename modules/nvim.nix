@@ -50,6 +50,7 @@
       			dofile('/home/k3ys/nixos-config/modules/lua/config/telescope.lua')
       			dofile('/home/k3ys/nixos-config/modules/lua/config/lsp-zero.lua')
       			dofile('/home/k3ys/nixos-config/modules/lua/config/tree-sitter.lua')
+      			dofile('/home/k3ys/nixos-config/modules/lua/config/ufo.lua')
             	'';
     plugins = with pkgs.vimPlugins;[
       auto-pairs
@@ -77,6 +78,9 @@
       telescope-live-grep-args-nvim
       telescope-nvim
       plenary-nvim
+
+	  # folds
+	  nvim-ufo
     ];
   };
 }
