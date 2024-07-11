@@ -1,11 +1,11 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{ config, lib, pkgs, pkgs-unstable, modulesPath, ... }:
 {
   imports = [
     ./modules/nvim.nix
   ];
   home-manager.users.k3ys = { pkgs, ... }: {
     fonts.fontconfig.enable = true;
-    home.packages = with pkgs;[
+    home.packages = with pkgs-unstable;[
       (nerdfonts.override { fonts = [ "FiraCode" ]; })
       tree
       slack
@@ -38,6 +38,7 @@
       dbeaver-bin
       stremio
       vesktop
+	  zed-editor
     ];
 
     programs.tmux = {
