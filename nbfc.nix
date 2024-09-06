@@ -1,12 +1,10 @@
 { inputs, pkgs, ... }:
 let
-  myUser = "k3ys"; #adjust this to your username
+  myUser = "k3ys"; # adjust this to your username
   command = "bin/nbfc_service --config-file '/home/${myUser}/nixos-config/nbfc.json'";
 in
 {
-  environment.systemPackages = with pkgs; [
-    inputs.nbfc-linux.packages.x86_64-linux.default
-  ];
+  environment.systemPackages = with pkgs; [ inputs.nbfc-linux.packages.x86_64-linux.default ];
 
   systemd.services.nbfc_service = {
     enable = true;

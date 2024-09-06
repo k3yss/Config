@@ -5,17 +5,19 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [
-      # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./nbfc.nix
-      ./home-manager.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ./nbfc.nix
+    # ./home-manager.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  hardware.bluetooth.enable = true; # enables support for Bluetooth
+  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -45,21 +47,6 @@
     LC_TIME = "en_IN";
   };
 
-  # services.power-profiles-daemon.enable = false;
-
-  # Enable auto-cpufreq
-  #   services.auto-cpufreq.enable = true;
-  #   services.auto-cpufreq.settings = {
-  # 	  battery = {
-  # 		  governor = "powersave";
-  # 		  turbo = "never";
-  # 	  };
-  # 	  charger = {
-  # 		  governor = "performance";
-  # 		  turbo = "auto";
-  # 	  };
-  #   };
-
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
@@ -78,22 +65,7 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  hardware.printers = {
-    ensurePrinters = [
-      {
-        name = "Dell_1250c";
-        location = "Home";
-        deviceUri = "usb://Brother/DCP-T420W?serial=E80718L2H578798";
-        model = "gutenprint.5.3://brother-dcp-1200/expert";
-        ppdOptions = {
-          PageSize = "A4";
-        };
-      }
-    ];
-  };
-
   services.printing.drivers = [
-    (pkgs.callPackage ./dcpt420w.nix { })
     pkgs.gutenprint
     pkgs.gutenprintBin
     pkgs.brlaser
@@ -124,7 +96,12 @@
   users.users.k3ys = {
     isNormalUser = true;
     description = "k3ys";
-    extraGroups = [ "adbusers" "docker" "networkmanager" "wheel" ];
+    extraGroups = [
+      "adbusers"
+      "docker"
+      "networkmanager"
+      "wheel"
+    ];
     packages = with pkgs; [
       kdePackages.kate
       kdePackages.merkuro
@@ -132,10 +109,13 @@
       kdePackages.konsole
       kdePackages.yakuake
       kdePackages.spectacle
-      # clamav
+      kdePackages.kdenlive
+      poppler_utils
       gparted
-      nix-output-monitor
-      #  thunderbird
+      vim
+      git
+      home-manager
+      devenv
     ];
     shell = pkgs.zsh;
   };
@@ -152,7 +132,7 @@
   environment.variables.EDITOR = "nvim";
 
   # Install firefox.
-  programs.firefox.enable = true;
+  #programs.firefox.enable = true;
   programs.zsh.enable = true;
   programs.adb.enable = true;
   programs.gamemode.enable = true;
@@ -168,16 +148,29 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    heroic
     vim
     wget
     lshw
     wl-clipboard
     nss_latest
     mangohud
+    # support both 32- and 64-bit applications
+    wineWowPackages.stable
+
+    # wine-staging (version with experimental features)
+    wineWowPackages.staging
+
+    # winetricks (all versions)
+    winetricks
+
+    # native wayland support (unstable)
+    wineWowPackages.waylandFull
   ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -221,8 +214,16 @@
       setSocketVariable = true;
     };
   };
+
+  virtualisation.libvirtd.enable = true;
+  programs.virt-manager.enable = true;
+
+  virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "k3ys" ];
   hardware.nvidia = {
-	  open = true;
-	  package = config.boot.kernelPackages.nvidiaPackages.stable;
-  }; 
+    package = config.boot.kernelPackages.nvidiaPackages.production;
+    open = true;
+  };
+
+  zramSwap.enable = true;
 }

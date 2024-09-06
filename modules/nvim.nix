@@ -1,7 +1,13 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  modulesPath,
+  ...
+}:
 {
   fonts.fontconfig.enable = true;
-  home-manager.users.k3ys.programs.neovim = {
+  programs.neovim = {
     enable = true;
     extraConfig = ''
       	      set number relativenumber
@@ -52,7 +58,7 @@
       			dofile('/home/k3ys/nixos-config/modules/lua/config/tree-sitter.lua')
       			dofile('/home/k3ys/nixos-config/modules/lua/config/ufo.lua')
             	'';
-    plugins = with pkgs.vimPlugins;[
+    plugins = with pkgs.vimPlugins; [
       auto-pairs
       vim-airline
       vim-airline-themes
@@ -70,8 +76,6 @@
       luasnip
       cmp-nvim-lsp
 
-      mason-nvim
-      mason-lspconfig-nvim
       lspkind-nvim
 
       # telescope
@@ -79,8 +83,8 @@
       telescope-nvim
       plenary-nvim
 
-	  # folds
-	  nvim-ufo
+      # folds
+      nvim-ufo
     ];
   };
 }
