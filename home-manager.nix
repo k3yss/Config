@@ -6,12 +6,8 @@
   modulesPath,
   ...
 }:
-let
-  zed-fhs = pkgs.buildFHSUserEnv {
-    name = "zed";
-    targetPkgs = pkgs: with pkgs-unstable; [ zed-editor ];
-    runScript = "zed";
-  };
+let 
+  gdk = pkgs.google-cloud-sdk.withExtraComponents [ pkgs.google-cloud-sdk.components.gke-gcloud-auth-plugin ] ;
 in
 {
   # The state version is required and should stay at the version you
@@ -23,7 +19,16 @@ in
     with pkgs;
     [
       (nerdfonts.override { fonts = [ "FiraCode" ]; })
+      chromium
+      kcalc
+	  libreoffice
+      postman
+      audacity
+      mpv
+      gopls
+      jq
       act
+      zathura
       tree
       python3Full
       vlc
@@ -33,15 +38,12 @@ in
       nixpkgs-fmt
       nixfmt-rfc-style
       zoom-us
-      fly
       mattermost-desktop
       telegram-desktop
-      chromium
       lua-language-server
       lazygit
       lazydocker
-      libreoffice-qt
-      google-cloud-sdk
+      # google-cloud-sdk
       htop
       meld
       direnv
@@ -59,18 +61,22 @@ in
       clang
       clang-tools
       ansible
-	  nodejs_22
-    ]
-    ++ [
-      pkgs-unstable.firefox
-      pkgs-unstable.discord
-      pkgs-unstable.vscode
-      pkgs-unstable.sparrow
-      pkgs-unstable.vagrant
-      pkgs-unstable.stremio
-      pkgs-unstable.alacritty
-      pkgs-unstable.rust-analyzer
-	  pkgs-unstable.zed-editor
+      nodejs_22
+      awscli2
+      zip
+      imagemagick
+      ffmpeg-full
+      aws-sam-cli
+      stremio
+      discord
+	  vscode
+	  sparrow
+	  keybase-gui
+	  # keybase
+    gdk
+	 (pkgs.tree-sitter.override {
+      webUISupport = true;
+    })
     ];
 
   programs.tmux = {
@@ -96,6 +102,7 @@ in
     shellAliases = {
       vim = "nvim";
       tf = "terraform";
+      k = "kubectl";
     };
     syntaxHighlighting.enable = true;
     plugins = with pkgs; [
@@ -145,6 +152,7 @@ in
       ".vscode"
     ];
   };
+
   imports = [ ./modules/nvim.nix ];
 
   nixpkgs.config = {

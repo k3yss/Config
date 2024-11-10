@@ -8,39 +8,54 @@ end)
 -- Define the devenv_lsp functionality
 local devenv_lsp = {}
 
-local find_rust_bin = function()
-    return "/home/k3ys/aqua/lsp/target/debug/devenv-nvim-lsp"
+local function find_rust_bin()
+    local bin = "/home/k3ys/sandbox/cachix/devenv/target/debug/devenv"
+    if vim.fn.executable(bin) == 1 then
+        return bin
+    else
+        error("devenv binary not found")
+    end
+end
+
+local function find_root_dir(fname)
+    local root = vim.fs.dirname(vim.fs.find({'devenv.nix'}, { upward = true, path = fname })[1])
+    return root or vim.fn.getcwd()
 end
 
 devenv_lsp.start = function()
-    vim.lsp.start({
-        name = "devenv-nvim-lsp",
-        cmd = { find_rust_bin() },
-        root_dir = vim.fs.dirname(vim.fs.find({'devenv.nix'}, { upward = true })[1]),
+    local root_dir = find_root_dir(vim.fn.expand('%:p'))
+    local client = vim.lsp.start({
+        name = "devenv-lsp",
+        cmd = { find_rust_bin(), "lsp" },
+        root_dir = root_dir,
+		cmd_env = { DEVENV_NIX = "/nix/store/l3zdaaps1f12638bgrx8l69l9jpdh1hn-nix-devenv-2.24.0pre20240927_f6c5ae4" }
     })
+    if not client then
+        vim.notify("Failed to start devenv LSP", vim.log.levels.ERROR)
+    end
 end
 
--- Create an augroup instead of a namespace
-local group = vim.api.nvim_create_augroup("devenv-nvim-lsp", { clear = true })
+local group = vim.api.nvim_create_augroup("devenv-lsp", { clear = true })
 
 devenv_lsp.setup = function ()
-    -- No need to clear autocmds manually, the augroup does this automatically
     vim.api.nvim_create_autocmd("FileType", {
         group = group,
         pattern = {"nix"},
-        callback = devenv_lsp.start,
+        callback = function()
+            pcall(devenv_lsp.start)
+        end,
     })
 end
 
--- Setup devenv_lsp
 devenv_lsp.setup()
-
 
 require('lspconfig').rust_analyzer.setup{}
 require('lspconfig').pyright.setup{}
 require('lspconfig').clangd.setup{}
 require('lspconfig').terraformls.setup{}
-require('lspconfig').lua_ls.setup{}
+require('lspconfig').zls.setup{}
+-- require('lspconfig').lua_ls.setup{}
+require('lspconfig').gopls.setup{}
 --require('lspconfig').nixd.setup({
 --   cmd = { "nixd" },
 --   settings = {

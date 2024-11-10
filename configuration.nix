@@ -2,8 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
-
+{ config, pkgs, pkgs-unstable, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
@@ -62,16 +61,13 @@
     xkb.variant = "";
   };
 
+
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  services.printing.drivers = [
-    pkgs.gutenprint
-    pkgs.gutenprintBin
-    pkgs.brlaser
-    pkgs.brgenml1lpr
-    pkgs.brgenml1cupswrapper
-  ];
+  # Keybase
+  services.keybase.enable = true;
+  services.kbfs.enable = true;
 
   # Enable sound with pipewire.
   hardware.pulseaudio.enable = false;
@@ -101,11 +97,11 @@
       "docker"
       "networkmanager"
       "wheel"
+      "i2c"
     ];
     packages = with pkgs; [
       kdePackages.kate
       kdePackages.merkuro
-      kdePackages.partitionmanager
       kdePackages.konsole
       kdePackages.yakuake
       kdePackages.spectacle
@@ -116,6 +112,10 @@
       git
       home-manager
       devenv
+      openssl
+      libiconv
+      pkg-config
+	  pkgs-unstable.zed-editor
     ];
     shell = pkgs.zsh;
   };
@@ -129,10 +129,13 @@
   # Enable automatic login for the user.
   services.displayManager.autoLogin.enable = false;
   services.displayManager.autoLogin.user = "k3ys";
-  environment.variables.EDITOR = "nvim";
+  environment.variables = {
+    EDITOR = "nvim";
+    PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
+  };
 
   # Install firefox.
-  #programs.firefox.enable = true;
+  programs.firefox.enable = true;
   programs.zsh.enable = true;
   programs.adb.enable = true;
   programs.gamemode.enable = true;
@@ -165,6 +168,7 @@
 
     # native wayland support (unstable)
     wineWowPackages.waylandFull
+    curl
   ];
 
   nix.settings.experimental-features = [
@@ -205,25 +209,58 @@
     extra-trusted-public-keys = devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=
   '';
 
+  fonts.packages = with pkgs; [
+    noto-fonts
+    noto-fonts-cjk
+    noto-fonts-emoji
+    liberation_ttf
+    fira-code
+    fira-code-symbols
+    mplus-outline-fonts.githubRelease
+    dina-font
+    proggyfonts
+  ];
+
   services.envfs.enable = true;
   # docker
   virtualisation.docker = {
     enable = true;
-    rootless = {
-      enable = true;
-      setSocketVariable = true;
-    };
   };
 
-  virtualisation.libvirtd.enable = true;
-  programs.virt-manager.enable = true;
+  #hardware.nvidia = {
+  #  package = config.boot.kernelPackages.nvidiaPackages.stable;
+  #};
+  boot.extraModprobeConfig = ''
+    blacklist nouveau
+    options nouveau modeset=0
+  '';
 
-  virtualisation.virtualbox.host.enable = true;
-  users.extraGroups.vboxusers.members = [ "k3ys" ];
-  hardware.nvidia = {
-    package = config.boot.kernelPackages.nvidiaPackages.production;
-    open = true;
-  };
+  boot.kernelParams = [
+    "cgroup_enable=cpuset"
+    "cgroup_memory=1"
+    "cgroup_enable=memory"
+  ];
+
+  services.udev.extraRules = ''
+    # Remove NVIDIA USB xHCI Host Controller devices, if present
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c0330", ATTR{power/control}="auto", ATTR{remove}="1"
+    # Remove VIDIA USB Type-C UCSI devices, if present
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c8000", ATTR{power/control}="auto", ATTR{remove}="1"
+    # Remove NVIDIA Audio devices, if present
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{power/control}="auto", ATTR{remove}="1"
+    # Remove NVIDIA VGA/3D controller devices
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x03[0-9]*", ATTR{power/control}="auto", ATTR{remove}="1"
+  '';
+
+  boot.blacklistedKernelModules = [
+    "nouveau"
+    "nvidia"
+    "nvidia_drm"
+    "nvidia_modeset"
+  ];
+
 
   zramSwap.enable = true;
+
+  programs.partition-manager.enable = true;
 }

@@ -1,8 +1,7 @@
 require'nvim-treesitter.configs'.setup {
-  
     highlight = {
       enable = true,
-      disable = { "c", "rust" },
+      -- disable = { "c", "rust" },
       -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
       disable = function(lang, buf)
           local max_filesize = 100 * 1024 -- 100 KB
@@ -11,7 +10,6 @@ require'nvim-treesitter.configs'.setup {
               return true
           end
       end,
-  
       -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
       -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
       -- Using this option may slow down your editor, and you may see some duplicate highlights.
